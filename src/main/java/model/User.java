@@ -1,9 +1,9 @@
 package model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.sun.istack.internal.NotNull;
+import org.hibernate.annotations.Table;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -13,22 +13,29 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id_u;
 
+    @Column(unique = true)
     private String email;
     private String password;
-    private String role;
+    @Enumerated
+    private RoleEnum role;
     private boolean enable;
-    private LocalDate date_add;
 
-    public User(String email, String password, String role, boolean enable, LocalDate date_add) {
+    private LocalDate date_add = LocalDate.now();
+
+    @Transient
+    private String secrete_code;
+
+
+    public User() {
+    }
+
+    public User(String email, String password, RoleEnum role, boolean enable, LocalDate date_add, String secrete_code) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.enable = enable;
         this.date_add = date_add;
-    }
-
-    public User() {
-
+        this.secrete_code = secrete_code;
     }
 
     public int getId_u() {
@@ -55,11 +62,11 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public RoleEnum getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(RoleEnum role) {
         this.role = role;
     }
 
@@ -78,5 +85,12 @@ public class User {
     public void setDate_add(LocalDate date_add) {
         this.date_add = date_add;
     }
-}
 
+    public String getSecrete_code() {
+        return secrete_code;
+    }
+
+    public void setSecrete_code(String secrete_code) {
+        this.secrete_code = secrete_code;
+    }
+}

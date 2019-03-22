@@ -1,6 +1,7 @@
 package controller;
 
 import configuration.HibernateConfiguration;
+import model.RoleEnum;
 import model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,13 +13,13 @@ import java.util.List;
 
 public class UserController {
 
-    public void addUser(String email, String password, String role, boolean enable, LocalDate date_added){
+    public void addUser(String email, String password, RoleEnum role, boolean enable, LocalDate date_added,String secrete_code){
         //Otwieranie sesji-tranzakcji
         Session session = HibernateConfiguration.getSessionFactory().openSession();
         //Rozpoczęcie tranzakcji
         Transaction transaction = session.beginTransaction();
         //wykonanie polecen sql
-        User user = new User(email,password,role,enable,date_added);
+        User user = new User(email,password,role,enable,date_added,secrete_code);
         //Insert into user
         session.save(user);
         //Zatwierdzenie tranzakcji
