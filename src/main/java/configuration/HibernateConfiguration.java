@@ -6,9 +6,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 public class HibernateConfiguration {
-
     private static SessionFactory sessionFactory;
-
     public static SessionFactory getSessionFactory() {
         Configuration configuration = new Configuration();
         configuration.configure("hibernate.cfg.xml");
@@ -21,3 +19,4 @@ public class HibernateConfiguration {
         return sessionFactory;
     }
 }
+

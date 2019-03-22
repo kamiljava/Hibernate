@@ -1,41 +1,47 @@
 package model;
 
-import com.sun.istack.internal.NotNull;
-import org.hibernate.annotations.Table;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Entity
+@Entity                                             // adnotacja tworząca tabelkę user w DB
+//@Table(name = "uzytkownicy")                      // ustawienie własnej nazwy dal tabelki SQL
 public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id                                             // adnotacja determinująca PK
+    @GeneratedValue(strategy = GenerationType.AUTO) // adnotacja determinująca AI
     private int id_u;
-
     @Column(unique = true)
     private String email;
     private String password;
     @Enumerated
-    private RoleEnum role;
+    private RoleEnum role;                          // umożliwia przypisanie nazw ról zgdonie z RoleEnum
     private boolean enable;
-
-    private LocalDate date_add = LocalDate.now();
-
-    @Transient
+    private LocalDate date_added = LocalDate.now();
+    @Transient                                      // adnotacja wyłączająca pole przy mapowaniu
     private String secrete_code;
-
 
     public User() {
     }
 
-    public User(String email, String password, RoleEnum role, boolean enable, LocalDate date_add, String secrete_code) {
+    public User(String email, String password, RoleEnum role, boolean enable, LocalDate date_added, String secrete_code) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.enable = enable;
-        this.date_add = date_add;
+        this.date_added = date_added;
         this.secrete_code = secrete_code;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id_u=" + id_u +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", enable=" + enable +
+                ", date_added=" + date_added +
+                ", secrete_code='" + secrete_code + '\'' +
+                '}';
     }
 
     public int getId_u() {
@@ -78,12 +84,12 @@ public class User {
         this.enable = enable;
     }
 
-    public LocalDate getDate_add() {
-        return date_add;
+    public LocalDate getDate_added() {
+        return date_added;
     }
 
-    public void setDate_add(LocalDate date_add) {
-        this.date_add = date_add;
+    public void setDate_added(LocalDate date_added) {
+        this.date_added = date_added;
     }
 
     public String getSecrete_code() {

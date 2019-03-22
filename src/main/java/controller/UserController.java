@@ -1,63 +1,109 @@
 package controller;
 
 import configuration.HibernateConfiguration;
-import model.Role1;
-import model.RoleEnum;
-import model.User;
-import model.User1;
+import model.*;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 
+import javax.management.relation.Role;
 import java.time.LocalDate;
-import java.util.List;
 
 public class UserController {
-
-    public void addUser(String email, String password, RoleEnum role, boolean enable, LocalDate date_added,String secrete_code){
-        //Otwieranie sesji-tranzakcji
+    public void addUser(String email, String password, RoleEnum role, boolean enable, LocalDate date_added, String secret_code){
+        // Otwieramy sesję - tranzakcję
         Session session = HibernateConfiguration.getSessionFactory().openSession();
-        //Rozpoczęcie tranzakcji
+        // Rozpoczęcie tranzakcji
         Transaction transaction = session.beginTransaction();
-        //wykonanie polecen sql
-        User user = new User(email,password,role,enable,date_added,secrete_code);
-        //Insert into user
+        // wykonanie polecenia SQL
+        User user = new User(email,password,role,enable,date_added, secret_code);
+        System.out.println(user);
+        // INSERT INTO user VALUES (default, email, password, role, enable, date_added)
         session.save(user);
-        //Zatwierdzenie tranzakcji
+        // zattwierdzenie tranzakcji
         transaction.commit();
-        //zamkniecie sesji
+        // zamknięcie połączenia z sesją
         session.close();
     }
-        public Role1 getRoleById(int Id){
-            Session session = HibernateConfiguration.getSessionFactory().openSession();
-            Transaction transaction = session.beginTransaction();
-            //Pytanie select
-            Query query = session.createQuery("SELECT r FROM Role1 r WHERE r.id_r=:id ");
-            query.setInteger("id",Id);
-            query.setMaxResults(1);
-            Role1 role =(Role1) query.uniqueResult();
-            transaction.commit();
-            session.close();
+    // serwis zwraca role z DB po podanym ID
+    public Role1 getRoleById(int id){
+        Session session = HibernateConfiguration.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        // zapytanie typu SELECT
+        Query query = session.createQuery("SELECT r FROM Role1 r WHERE r.id_r=:id");
+        query.setInteger("id", id);
+        query.setMaxResults(1);
+        Role1 role = (Role1) query.uniqueResult();
+        transaction.commit();
+        session.close();
         return role;
     }
-
-    public void  addUser1(String email,String password){
+    public void addUser1(String email, String password){
         Session session = HibernateConfiguration.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        //utworzenie uzytkownia user1
-        User1 user1 = new User1(email,password);
-        //przypisanie aktywnosci
+        // utworzenie obiektu użytkownika
+        User1 user1 = new User1(email, password);
+        // przypisanie aktywności
         user1.setEnable(true);
-        //przypisanie daty
-        user1.setDate_add(LocalDate.now());
-        //przypisanie roli
-        user1.addRolesToSet(getRoleById(1));
+        // przypisanie daty
+        user1.setDate_added(LocalDate.now());
+        // przypisanie roli -> wprowadzenie obiektu Role1 do zbioru ról użytkownika
+        user1.addRoleToSet(getRoleById(1));
         session.save(user1);
+//        session.persist(user1);   -> nie zwraca wartości
+//        session.save(user1);      -> zwraca wartość
         transaction.commit();
         session.close();
     }
-
-
+    public User1 getUserById(int id){
+        Session session = HibernateConfiguration.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        // zapytanie typu SELECT
+        Query query = session.createQuery("SELECT u FROM User1 u WHERE u.id_u=:id");
+        query.setInteger("id", id);
+        query.setMaxResults(1);
+        User1 user = (User1) query.uniqueResult();
+        transaction.commit();
+        session.close();
+        return user;
+    }
+    // serwis do dadawania posta przez użytkownika
+    public void addPostByUser(String title, String content, int id_u){
+        Session session = HibernateConfiguration.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Post1 post1 = new Post1(title, content, getUserById(id_u));
+        session.save(post1);
+        transaction.commit();
+        session.close();
+    }
+    public Post1 getPostById(int id){
+        Session session = HibernateConfiguration.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        // zapytanie typu SELECT
+        Query query = session.createQuery("SELECT p FROM Post1 p WHERE p.id_p=:id");
+        query.setInteger("id", id);
+        query.setMaxResults(1);
+        Post1 post = (Post1) query.uniqueResult();
+        transaction.commit();
+        session.close();
+        return post;
+    }
+    // serwis do usuwania posta po id
+    public void deletePostById(int id_p){
+        Session session = HibernateConfiguration.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        session.delete(getPostById(id_p));
+        transaction.commit();
+        session.close();
+    }
+    // serwis do modyfikacji tytułu posta
+    public void updatePostTitleByPostId(int id_p, String newTitle){
+        Session session = HibernateConfiguration.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Post1 post1 = getPostById(id_p);
+        post1.setTitle(newTitle);
+        session.saveOrUpdate(post1);
+        transaction.commit();
+        session.close();
+    }
 }

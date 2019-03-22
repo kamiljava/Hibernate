@@ -11,5 +11,4 @@ public class Role1 {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id_r;
     private String role_name;
-
 }

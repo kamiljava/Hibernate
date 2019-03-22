@@ -1,38 +1,39 @@
 package model;
 
-import javax.management.relation.Role;
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.*;
-import java.util.Set;
 
-@Entity
+@Entity                                             // adnotacja tworząca tabelkę user w DB
 public class User1 {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id                                             // adnotacja determinująca PK
+    @GeneratedValue(strategy = GenerationType.AUTO) // adnotacja determinująca AI
     private int id_u;
-
     @Column(unique = true)
     private String email;
     private String password;
 
+    // CascadeType.ALL  -> związane z odwołaniem do encji i jej relacji
+    // FetchType.EAGER  -> przy utowrzeniu encji mamy dostęp do powiązań
+    // FetchType.LAZY   -> przy utworzenu encji musimy ręcznie wywołać powiązania
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-            @JoinTable(name = "user1_role1")
-    Set<Role1> roles = new HashSet<>();
-
+    @JoinTable(name = "user1_role1")
+    Set<Role1> roles = new HashSet<>();             // użytkownik może mieć wiele ról
     private boolean enable;
-    private LocalDate date_add = LocalDate.now();
-
-    @Transient
+    private LocalDate date_added = LocalDate.now();
+    @Transient                                      // adnotacja wyłączająca pole przy mapowaniu
     private String secrete_code;
-
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "user1")
+                                                    // relacja 1 : n
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user1")
     List<Post1> posts = new ArrayList<>();
 
     public User1() {
+    }
+
+    public User1(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public int getId_u() {
@@ -66,10 +67,11 @@ public class User1 {
     public void setRoles(Set<Role1> roles) {
         this.roles = roles;
     }
-    public void addRolesToSet(Role1 role1){
+    // ---------DODAJEMY SETTER -----------------------
+    public void addRoleToSet(Role1 role1){
         this.roles.add(role1);
     }
-
+    // ------------------------------------------------
     public boolean isEnable() {
         return enable;
     }
@@ -78,12 +80,12 @@ public class User1 {
         this.enable = enable;
     }
 
-    public LocalDate getDate_add() {
-        return date_add;
+    public LocalDate getDate_added() {
+        return date_added;
     }
 
-    public void setDate_add(LocalDate date_add) {
-        this.date_add = date_add;
+    public void setDate_added(LocalDate date_added) {
+        this.date_added = date_added;
     }
 
     public String getSecrete_code() {
@@ -102,8 +104,17 @@ public class User1 {
         this.posts = posts;
     }
 
-    public User1(String email, String password) {
-        this.email = email;
-        this.password = password;
+    @Override
+    public String toString() {
+        return "User1{" +
+                "id_u=" + id_u +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                ", enable=" + enable +
+                ", date_added=" + date_added +
+                ", secrete_code='" + secrete_code + '\'' +
+                ", posts=" + posts +
+                '}';
     }
 }
