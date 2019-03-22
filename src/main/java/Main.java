@@ -14,5 +14,7 @@ public class Main {
  //       userController.addPostByUser("X1","X1",1);
  //       userController.addPostByUser("X2","X2",1);
  //       System.out.println(userController.getUserById(1));
+        userController.deletePostById(2);
+        userController.updatePostTitleByPostId(1 ,"Update działa");
     }
 }
